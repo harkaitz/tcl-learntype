@@ -34,7 +34,6 @@ proc learntype { args } {
             set text_missing [string toupper [join $syllables ""]]
             set text_typed   ""
             while {1} {
-                
                 puts_clear
                 puts_word $text_typed $text_missing
                 puts_keyboard $lang $text_missing
@@ -84,7 +83,7 @@ proc puts_keyboard { lang text_missing } {
     puts [keyboard_str $lang $text_missing]
 }
 proc puts_art { name } {
-    puts [learntype_search_art $name]
+    puts -nonewline [learntype_search_art $name]
 }
 # --------------------------------------------------------------------
 proc learntype_search_file { lang } {
