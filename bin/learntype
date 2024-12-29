@@ -87,23 +87,31 @@ proc puts_art { name } {
 }
 # --------------------------------------------------------------------
 proc learntype_search_file { lang } {
+    set filename1 /etc/learntype/$lang.txt
+    set filename2 [file dirname [info script]]/../etc/learntype/$lang.txt
     if {[file exists $lang]} {
         set fp [open $lang r]
+    } elseif {[file exists $filename1]} {
+        set fp [open $filename1 r]
+    } elseif {[file exists $filename2]} {
+        set fp [open $filename2 r]
     } else {
-        set filename [file dirname [info script]]/../etc/learntype/$lang.txt
-        if {![file exists $filename]} {
-            error "$lang: Unsupported language."
-        }
-        set fp [open $filename r]
+        error "$lang: Unsupported language."
     }
     set data [read $fp]
     close $fp
     return [string map {"\n" " "} $data]
 }
 proc learntype_search_art { name } {
-    set filename [file dirname [info script]]/../etc/learntype/art/$name.txt
-    if {[file exists $filename]} {
-        set fp [open $filename r]
+    set filename1 /etc/learntype/art/$name.txt
+    set filename2 [file dirname [info script]]/../etc/learntype/art/$name.txt
+    if {[file exists $filename1]} {
+        set fp [open $filename1 r]
+        set data [read $fp]
+        close $fp
+        return $data
+    } elseif {[file exists $filename2]} {
+        set fp [open $filename2 r]
         set data [read $fp]
         close $fp
         return $data
