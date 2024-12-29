@@ -1,0 +1,2 @@
+#!/bin/sh -e
+exec xterm -fa 'Monospace' -fs 34 -bg black -fg white -fullscreen -e "$(dirname $0)/learntype" "$@"

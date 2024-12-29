@@ -1,0 +1,12 @@
+House    {house}
+Apple    {apple}
+Ball     {ball}
+Cat      {cat}
+Dog      {dog}
+Elephant {elephant}
+Fish     {fish}
+Happy    {happy}
+Jump     {jump}
+Kite     {kite}
+Lion     {lion}
+

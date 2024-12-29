@@ -1,0 +1,188 @@
+#!/usr/bin/env tclsh
+set LEARNTYPE_HELP "Usage: learntype \[-l es|en|eu\]\[-n CHILD_NAME\]
+
+Small CLI program for children to learn typing.
+
+Copyright (c)
+"
+proc learntype { args } {
+    global LEARNTYPE_HELP
+
+    # Options.
+    set lang "en"
+    set child ""
+    
+    # Parse command line arguments.
+    set argc [llength $args]
+    for {set i 0} {$i < $argc} {incr i} {
+        set arg [lindex $args $i]
+        switch -regexp $arg {
+            {^-h$} - {^--help$} { error $help }
+            {^-l$}  { set lang [lindex $args $i+1] }
+            {^-n$}  { set child [lindex $args $i+1] }
+            {^-.*$} { error "Invalid argument `$arg`." }
+            {^.*$}  { set args [lrange $args $i end] }
+        }
+    }
+    
+    # Open dictionary.
+    set dict [learntype_search_file $lang]
+    
+    # For each word.
+    while {1} {
+        foreach {name syllables} $dict {
+            set text_missing [string toupper [join $syllables ""]]
+            set text_typed   ""
+            while {1} {
+                
+                puts_clear
+                puts_word $text_typed $text_missing
+                puts_keyboard $lang $text_missing
+                flush stdout
+                read_text $lang [string index $text_missing 0]
+                read_text $lang $text_typed$text_missing
+                set keystroke [string toupper [read_keystroke]]
+                if {$keystroke eq [string index $text_missing 0]} {
+                    set text_missing [string range $text_missing 1 end]
+                    set text_typed $text_typed$keystroke
+                }
+                if {$text_missing eq ""} {
+                    break
+                }
+            }
+            puts_clear
+            puts_art $name
+            puts_word $text_typed $text_missing
+            read_text $lang $text_typed
+            switch $lang {
+                "es" { read_text $lang "Muy bien $child, has escrito $text_typed " }
+                "eu" { read_text $lang "Oso ondo $child, $text_typed idatzi duzu." }
+                "en" { read_text $lang "Very good $child, you wrote $text_typed." }
+            }
+        }
+    }
+}
+
+
+
+
+# --------------------------------------------------------------------
+proc puts_clear {} {
+    puts -nonewline "\033\[2J\033\[H"
+}
+proc puts_word { text_typed text_missing  } {
+    set a_strong "\033\[1m"
+    set a_reset "\033\[0m"
+    set a_underline "\033\[4m"
+    set a [string index $text_missing 0]
+    set b [string range $text_missing 1 end]
+    puts " __________________________________________"
+    puts "| [s_strong $text_typed][s_underline $a]$b"
+    puts "|__________________________________________|"
+}
+proc puts_keyboard { lang text_missing } {
+    puts [keyboard_str $lang $text_missing]
+}
+proc puts_art { name } {
+    puts [learntype_search_art $name]
+}
+# --------------------------------------------------------------------
+proc learntype_search_file { lang } {
+    if {[file exists $lang]} {
+        set fp [open $lang r]
+    } else {
+        set filename [file dirname [info script]]/../etc/learntype/$lang.txt
+        if {![file exists $filename]} {
+            error "$lang: Unsupported language."
+        }
+        set fp [open $filename r]
+    }
+    set data [read $fp]
+    close $fp
+    return [string map {"\n" " "} $data]
+}
+proc learntype_search_art { name } {
+    set filename [file dirname [info script]]/../etc/learntype/art/$name.txt
+    if {[file exists $filename]} {
+        set fp [open $filename r]
+        set data [read $fp]
+        close $fp
+        return $data
+    } else {
+        return {}
+    }
+}
+
+# --------------------------------------------------------------------
+proc read_text { lang text } {
+    if {[catch {exec which espeak-ng}]} {
+        return
+    }
+    catch {
+        exec espeak-ng -v $lang $text
+    }
+}
+proc keyboard_str { lang {key ""} } {
+    switch $lang {
+        "es" - "eu" {
+            set l1 "(.)(1)(2)(3)(4)(5)(6)(7)(8)(9)(0)(.)(.)(___)"
+            set l2 "(..)(Q)(W)(E)(R)(T)(Y)(U)(I)(O)(P)(.)(.)|  |"
+            set l3 "(...)(A)(S)(D)(F)(G)(H)(J)(K)(L)(Ñ)(.)(.)|_|"
+            set l4 "(....)(Z)(X)(C)(V)(B)(N)(M)(........)(     )"
+        }
+        "en" {
+            set l1 "(.)(1)(2)(3)(4)(5)(6)(7)(8)(9)(0)(.)(.)(___)"
+            set l2 "(..)(Q)(W)(E)(R)(T)(Y)(U)(I)(O)(P)(.)(.)|  |"
+            set l3 "(...)(A)(S)(D)(F)(G)(H)(J)(K)(L)(;)(.)(.)|_|"
+            set l4 "(....)(Z)(X)(C)(V)(B)(N)(M)(........)(     )"
+        }
+        default {
+            set l1 "(.)(1)(2)(3)(4)(5)(6)(7)(8)(9)(0)(.)(.)(___)"
+            set l2 "(..)(Q)(W)(E)(R)(T)(Y)(U)(I)(O)(P)(.)(.)|  |"
+            set l3 "(...)(A)(S)(D)(F)(G)(H)(J)(K)(L)(;)(.)(.)|_|"
+            set l4 "(....)(Z)(X)(C)(V)(B)(N)(M)(........)(     )"
+        }
+    }
+    set txt [join [list $l1 $l2 $l3 $l4] "\n"]
+    if {$key ne ""} {
+        set key [string index $key 0]
+        set txt [string map [list "($key)" [s_blink "("][s_strong $key][s_blink ")"]] $txt]
+    }
+}
+proc read_keystroke {} {
+    if {[string equal $::tcl_platform(platform) "windows"]} {
+        if {[catch {package require TWAPI}]} {
+            error "TWAPI package is required for Windows but not installed."
+        }
+        set key [::twapi::read_console_keypress]
+    } else {
+        set stdin [open /dev/tty r+]
+        fconfigure $stdin -blocking 1 -buffering none
+        exec stty -echo -icanon < /dev/tty
+        set key [read $stdin 1]
+        exec stty echo icanon < /dev/tty
+        close $stdin
+    }
+    return $key
+}
+proc s_blink { s } {
+    return "\033\[5m${s}\033\[0m"
+}
+proc s_strong { s } {
+    return "\033\[1m${s}\033\[0m"
+}
+proc s_underline { s } {
+    return "\033\[4m${s}\033\[0m"
+}
+# --------------------------------------------------------------------
+if {[file tail $argv0] eq [file tail [info script]]} {
+    if {[info exists env(DEBUG)]} {
+        learntype {*}$argv
+    } elseif {[catch {
+        learntype {*}$argv
+    } err]} {
+        puts stderr "learntype: error: $err"
+        exit 1
+    }
+}
+

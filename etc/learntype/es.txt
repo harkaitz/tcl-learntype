@@ -1,0 +1,11 @@
+House    {ca sa}
+Apple    {man za na}
+Ball     {pe lo ta}
+Cat      {ga to}
+Dog      {pe rro}
+Elephant {e le fan te}
+Fish     {pez}
+Happy    {fe liz}
+Jump     {sal to}
+Kite     {co me ta}
+Lion     {le on}
