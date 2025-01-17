@@ -18,8 +18,8 @@ proc learntype { args } {
         set arg [lindex $args $i]
         switch -regexp $arg {
             {^-h$} - {^--help$} { error $help }
-            {^-l$}  { set lang [lindex $args $i+1] }
-            {^-n$}  { set child [lindex $args $i+1] }
+            {^-l$}  { set lang [lindex $args $i+1]; incr i }
+            {^-n$}  { set child [lindex $args $i+1]; incr i }
             {^-.*$} { error "Invalid argument `$arg`." }
             {^.*$}  { set args [lrange $args $i end] }
         }
