@@ -1,9 +1,19 @@
 #!/usr/bin/env tclsh
 set LEARNTYPE_HELP "Usage: learntype \[-l es|en|eu\]\[-n CHILD_NAME\]
 
-Small CLI program for children to learn typing.
+Small CLI children's typing game (4/5 years old). The program shows a
+word and the child has to type it letter by letter.
 
-Copyright (c)
+Currently supported languages are:
+
+  - es: Spanish
+  - en: English
+  - eu: Basque
+
+If you install the \"espeak-ng\" package, the program will read the
+word and the result aloud.
+
+Copyright (c) 2025 - Harkaitz Agirre - All rights reserved.
 "
 proc learntype { args } {
     global LEARNTYPE_HELP
@@ -17,7 +27,7 @@ proc learntype { args } {
     for {set i 0} {$i < $argc} {incr i} {
         set arg [lindex $args $i]
         switch -regexp $arg {
-            {^-h$} - {^--help$} { error $help }
+            {^-h$} - {^--help$} { error $LEARNTYPE_HELP }
             {^-l$}  { set lang [lindex $args $i+1]; incr i }
             {^-n$}  { set child [lindex $args $i+1]; incr i }
             {^-.*$} { error "Invalid argument `$arg`." }

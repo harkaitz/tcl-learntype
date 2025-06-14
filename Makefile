@@ -1,4 +1,4 @@
-.POSIX:
+.POSIX: # POSIX Makefile, use make,gmake,pdpmake,bmake
 .SUFFIXES:
 .PHONY: all clean install check
 
@@ -6,9 +6,6 @@ PROJECT   =tcl-learntype
 VERSION   =1.0.0
 PREFIX    =/usr/local
 ETCDIR    =/etc
-BUILDDIR ?=.build
-UNAME_S  ?=$(shell uname -s)
-EXE      ?=$(shell uname -s | awk '/Windows/ || /MSYS/ || /CYG/ { print ".exe" }')
 
 all:
 clean:

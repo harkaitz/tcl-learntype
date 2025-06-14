@@ -1,2 +1,5 @@
 #!/bin/sh -e
-exec xterm -fa 'Monospace' -fs 34 -bg black -fg white -fullscreen -e "$(dirname $0)/learntype" "$@"
+case "$1" in
+    -h|--help) exec "$(dirname $0)/learntype" --help;;
+    *)         exec xterm -fa 'Monospace' -fs 34 -bg black -fg white -fullscreen -e "$(dirname $0)/learntype" "$@";;
+esac
