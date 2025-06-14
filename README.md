@@ -6,9 +6,10 @@ word and the child has to type it letter by letter.
 
 Currently supported languages are:
 
-  - es: Spanish
   - en: English
+  - es: Spanish
   - eu: Basque
+  - id: Indonesian
 
 If you install the "espeak-ng" package, the program will read the
 word and the result aloud.

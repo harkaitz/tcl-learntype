@@ -1,14 +1,10 @@
 #!/usr/bin/env tclsh
-set LEARNTYPE_HELP "Usage: learntype \[-l es|en|eu\]\[-n CHILD_NAME\]
+set LEARNTYPE_HELP "Usage: learntype \[-l LANG\]\[-n CHILD_NAME\]
 
 Small CLI children's typing game (4/5 years old). The program shows a
 word and the child has to type it letter by letter.
 
-Currently supported languages are:
-
-  - es: Spanish
-  - en: English
-  - eu: Basque
+Check \"/etc/learntype\" for supported languages.
 
 If you install the \"espeak-ng\" package, the program will read the
 word and the result aloud.
