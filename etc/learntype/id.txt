@@ -1,0 +1,12 @@
+House    {rumah}
+Apple    {apel}
+Ball     {bola}
+Cat      {kucing}
+Dog      {anjing}
+Elephant {gajah}
+Fish     {ikan}
+Happy    {senang}
+Jump     {loncat}
+Kite     {layangan}
+Lion     {singa}
+
